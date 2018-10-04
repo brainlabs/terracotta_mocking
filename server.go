@@ -85,6 +85,8 @@ func main() {
 	r.HandleFunc("/v3/items/in/price", itemPrice).Methods("GET")
 	r.HandleFunc("/service/in/users/agent/{id:[0-9]+}/verify-pin", verifyPin).Methods("GET")
 	r.HandleFunc("/payment_router/v1/transaction/{ref:[0-9a-zA-Z_\\-]+}/order-payment", makePayment).Methods("POST")
+	r.HandleFunc("/campaign/order/{ref:[0-9a-zA-Z_\\-]+}", checkCampaign).Methods("GET")
+	r.HandleFunc("/campaign/cancel-bulk", campaignCancelBulk).Methods("POST")
 
 	s := &http.Server{
 		Addr:         "localhost:9090", // set our http listener port 		// set our request handler
@@ -266,4 +268,42 @@ func newDataCollector(brokerList []string) sarama.SyncProducer {
 	}
 
 	return producer
+}
+
+func checkCampaign(w http.ResponseWriter, r *http.Request) {
+
+	ref := mux.Vars(r)["ref"]
+
+	fmt.Println(ref)
+	rsp := `{
+  "data": {
+    "reference": "` + ref + `",
+    "campaign_id": 174,
+    "counter_detail_id": 10, 
+    "campaign_type": "0",
+    "campaign_code": "GRAB",
+    "direct_discount": 25577,
+    "shipping_discount": 0
+  }
+}`
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(rsp))
+
+	return
+}
+
+// /campaign/cancel-bulk
+func campaignCancelBulk(w http.ResponseWriter, r *http.Request) {
+	rsp := `{
+    "messages": {
+        "en": "Promo has been cancel",
+        "id": "Promo berhasil dibatalkan"
+    }
+}`
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(rsp))
+
+	return
 }
