@@ -1,0 +1,8 @@
+{
+    "kafka": {
+        "hosts":"localhost:9092",
+        "topics":{
+            "payment_status":"payment_svc.payment_status"
+        }
+    }
+}
