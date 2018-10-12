@@ -20,11 +20,12 @@ type Kafka struct {
 	Topics struct {
 		PaymentStatus string `json:"payment_status"`
 	} `json:"topics"`
-	Listening string `json:"listening"`
+
 }
 
 type Config struct {
 	Kafka Kafka `json:"kafka"`
+	Listening string `json:"server_listen"`
 }
 
 var (
@@ -91,7 +92,7 @@ func main() {
 	r.HandleFunc("/v3/items/in/airtime/product/validate", validateProduct).Methods("POST")
 
 	s := &http.Server{
-		Addr:         cnf.Kafka.Listening, // set our http listener port 		// set our request handler
+		Addr:         cnf.Listening, // set our http listener port 		// set our request handler
 		Handler:      srvMx,
 		ReadTimeout:  time.Duration(10) * time.Second, // set our microservice read timeout (5s)
 		WriteTimeout: time.Duration(10) * time.Second, // set our microservice write timeout (5s)
