@@ -20,10 +20,12 @@ type Kafka struct {
 	Topics struct {
 		PaymentStatus string `json:"payment_status"`
 	} `json:"topics"`
+
 }
 
 type Config struct {
 	Kafka Kafka `json:"kafka"`
+	Listening string `json:"server_listen"`
 }
 
 var (
@@ -87,10 +89,14 @@ func main() {
 	r.HandleFunc("/payment_router/v1/transaction/{ref:[0-9a-zA-Z_\\-]+}/order-payment", makePayment).Methods("POST")
 	r.HandleFunc("/campaign/order/{ref:[0-9a-zA-Z_\\-]+}", checkCampaign).Methods("GET")
 	r.HandleFunc("/campaign/cancel-bulk", campaignCancelBulk).Methods("POST")
+
 	r.HandleFunc("/v1/airtime/in/topup", airtimeTopup).Methods("POST")
 
+	r.HandleFunc("/v3/items/in/airtime/product/validate", validateProduct).Methods("POST")
+
+
 	s := &http.Server{
-		Addr:         "localhost:9090", // set our http listener port 		// set our request handler
+		Addr:         cnf.Listening, // set our http listener port 		// set our request handler
 		Handler:      srvMx,
 		ReadTimeout:  time.Duration(10) * time.Second, // set our microservice read timeout (5s)
 		WriteTimeout: time.Duration(10) * time.Second, // set our microservice write timeout (5s)
@@ -309,6 +315,7 @@ func campaignCancelBulk(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+
 // airtimeTopup
 func airtimeTopup(w http.ResponseWriter, r *http.Request) {
 
@@ -358,6 +365,29 @@ func airtimeTopup(w http.ResponseWriter, r *http.Request) {
 		  "redeem_data": ""
 		}
 	  }`
+
+// /v3/items/in/airtime/product/validate
+func validateProduct(w http.ResponseWriter, r *http.Request) {
+
+	rsp := `{
+    "code": 1000,
+    "message": "success",
+    "data": {
+        "product_code": "TSV100",
+        "phone_number": "85850006613",
+        "country_calling_code": 62,
+        "b2b_price": 97000,
+        "price": 100000,
+        "name": "Voucher Rp100.000",
+        "nominal": 100000,
+        "description": "Voucher Rp100.000",
+        "item_id": 26178430,
+        "currency_code": "IDR",
+        "country_code": "ID",
+        "product_type": "pulsa"
+    }
+}`
+
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(rsp))

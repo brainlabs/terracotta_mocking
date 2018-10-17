@@ -4,5 +4,7 @@
         "topics":{
             "payment_status":"payment_svc.payment_status"
         }
-    }
+    },
+
+    "server_listen" :"localhost:9091"
 }
