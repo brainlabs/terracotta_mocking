@@ -6,5 +6,5 @@
         }
     },
 
-    "server_listen" :"localhost:9091"
+    "server_listen" :":9091"
 }
