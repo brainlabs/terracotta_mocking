@@ -89,7 +89,11 @@ func main() {
 	r.HandleFunc("/payment_router/v1/transaction/{ref:[0-9a-zA-Z_\\-]+}/order-payment", makePayment).Methods("POST")
 	r.HandleFunc("/campaign/order/{ref:[0-9a-zA-Z_\\-]+}", checkCampaign).Methods("GET")
 	r.HandleFunc("/campaign/cancel-bulk", campaignCancelBulk).Methods("POST")
+
+	r.HandleFunc("/v1/airtime/in/topup", airtimeTopup).Methods("POST")
+
 	r.HandleFunc("/v3/items/in/airtime/product/validate", validateProduct).Methods("POST")
+
 
 	s := &http.Server{
 		Addr:         cnf.Listening, // set our http listener port 		// set our request handler
@@ -311,6 +315,57 @@ func campaignCancelBulk(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+
+// airtimeTopup
+func airtimeTopup(w http.ResponseWriter, r *http.Request) {
+
+	ref := r.FormValue("transaction_reference_id")
+
+	//AirtimeSuccessCode 9000
+	//AirtimeNotfoundCode 9201
+
+	rsp := `{
+		"code": 9000, 
+		"message": "the transaction is processing",
+		"data": {
+		  "id": 991527116392632300,
+		  "partner_id": 2017,
+		  "item_id": 26178407,
+		  "biller_id": 0,
+		  "transaction_id": "991527116392632320",
+		  "frontier_transaction_id": "",
+		  "transaction_reference_id": "` + ref + `",
+		  "country_calling_code": 66,
+		  "phone_number": "812345678",
+		  "product_code": "THB204510",
+		  "biller_product_code": "",
+		  "biller_transaction_id": "",
+		  "callback_url": "http://10.172.3.36:8080/v3/b2b/in/order/airtime_v2/callback-receiver",
+		  "inquiry_response": "",
+		  "success_response": "",
+		  "message": "",
+		  "status": "queue",
+		  "product_type": "pulsa",
+		  "callback_status": 0,
+		  "has_sent_email": 0,
+		  "final_check_pending": 0,
+		  "country_code": "TH",
+		  "currency_code": "THB",
+		  "customer_id": "",
+		  "customer_email": "",
+		  "period": 0,
+		  "serial_number": "",
+		  "current_response": "",
+		  "created_at": "2018-02-01T17:18:00.672990671+07:00",
+		  "updated_at": null,
+		  "price": 0,
+		  "reseller_price": 0,
+		  "admin_fee": 0,
+		  "nominal": 0,
+		  "redeem_data": ""
+		}
+	  }`
+
 // /v3/items/in/airtime/product/validate
 func validateProduct(w http.ResponseWriter, r *http.Request) {
 
@@ -332,6 +387,7 @@ func validateProduct(w http.ResponseWriter, r *http.Request) {
         "product_type": "pulsa"
     }
 }`
+
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(rsp))
