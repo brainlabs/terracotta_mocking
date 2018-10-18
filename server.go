@@ -366,6 +366,11 @@ func airtimeTopup(w http.ResponseWriter, r *http.Request) {
 		}
 	  }`
 
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(rsp))
+
+	return
+}
 // /v3/items/in/airtime/product/validate
 func validateProduct(w http.ResponseWriter, r *http.Request) {
 
