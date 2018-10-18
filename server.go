@@ -281,7 +281,6 @@ func checkCampaign(w http.ResponseWriter, r *http.Request) {
 
 	ref := mux.Vars(r)["ref"]
 
-	fmt.Println(ref)
 	rsp := `{
   "data": {
     "reference": "` + ref + `",
