@@ -20,11 +20,10 @@ type Kafka struct {
 	Topics struct {
 		PaymentStatus string `json:"payment_status"`
 	} `json:"topics"`
-
 }
 
 type Config struct {
-	Kafka Kafka `json:"kafka"`
+	Kafka     Kafka  `json:"kafka"`
 	Listening string `json:"server_listen"`
 }
 
@@ -93,7 +92,7 @@ func main() {
 	r.HandleFunc("/v1/airtime/in/topup", airtimeTopup).Methods("POST")
 
 	r.HandleFunc("/v3/items/in/airtime/product/validate", validateProduct).Methods("POST")
-
+	r.HandleFunc("/v3/order-notify", paymentNotify).Methods("POST", "GET")
 
 	s := &http.Server{
 		Addr:         cnf.Listening, // set our http listener port 		// set our request handler
@@ -314,7 +313,6 @@ func campaignCancelBulk(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-
 // airtimeTopup
 func airtimeTopup(w http.ResponseWriter, r *http.Request) {
 
@@ -370,6 +368,7 @@ func airtimeTopup(w http.ResponseWriter, r *http.Request) {
 
 	return
 }
+
 // /v3/items/in/airtime/product/validate
 func validateProduct(w http.ResponseWriter, r *http.Request) {
 
@@ -392,9 +391,16 @@ func validateProduct(w http.ResponseWriter, r *http.Request) {
     }
 }`
 
-
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(rsp))
+
+	return
+}
+
+func paymentNotify(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusBadRequest)
+	w.Write([]byte(nil))
 
 	return
 }
